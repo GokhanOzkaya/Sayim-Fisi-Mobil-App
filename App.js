@@ -1,11 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Pressable, TextInput, ScrollView } from "react-native";
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Camera } from 'expo-camera';
+import * as Permissions from 'expo-permissions';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -97,7 +100,7 @@ const LoginScreen = ({ navigation }) => {
     >
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, styles.centerContent]}
       >
         <StatusBar style="dark" />
         
@@ -120,8 +123,8 @@ const LoginScreen = ({ navigation }) => {
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Şifre</Text>
-            <TextInput
-              style={styles.textInput}
+      <TextInput
+        style={styles.textInput}
               placeholder="Şifrenizi girin"
               placeholderTextColor="#666"
               secureTextEntry={true}
@@ -163,7 +166,7 @@ const RegisterScreen = ({ navigation }) => {
     >
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, styles.centerContent]}
       >
         <StatusBar style="dark" />
         
@@ -214,8 +217,8 @@ const RegisterScreen = ({ navigation }) => {
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Şifre Tekrar</Text>
-            <TextInput
-              style={styles.textInput}
+      <TextInput
+        style={styles.textInput}
               placeholder="Şifrenizi tekrar girin"
               placeholderTextColor="#666"
               secureTextEntry={true}
@@ -225,8 +228,8 @@ const RegisterScreen = ({ navigation }) => {
             />
           </View>
 
-          <Pressable
-            style={({ pressed }) => [
+      <Pressable
+        style={({ pressed }) => [
               styles.button,
               { backgroundColor: pressed ? "#ff7043" : "#ff5722" },
             ]}
@@ -349,8 +352,83 @@ const ProfileScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.homeContainer}>
-          <Text style={styles.welcomeTitle}>Profil</Text>
+        <View style={styles.profileContainer}>
+          {/* Profil Başlığı ve Fotoğraf */}
+          <View style={styles.profileHeader}>
+            <View style={styles.profileImageContainer}>
+              <Ionicons name="person" size={60} color="#ff5722" />
+              <Pressable style={styles.editImageButton}>
+                <Ionicons name="camera" size={20} color="white" />
+              </Pressable>
+            </View>
+            <Text style={styles.profileName}>Gökhan Özkaya</Text>
+            <Text style={styles.profileRole}>Sayım Sorumlusu</Text>
+          </View>
+
+          {/* Mağaza Bilgisi */}
+          <View style={styles.storeInfoCard}>
+            <View style={styles.storeInfoHeader}>
+              <Ionicons name="business" size={24} color="#ff5722" />
+              <Text style={styles.storeInfoTitle}>Mağaza Bilgileri</Text>
+            </View>
+            <View style={styles.storeInfoContent}>
+              <Text style={styles.storeInfoText}>Kadıköy Şubesi</Text>
+              <Text style={styles.storeInfoSubtext}>Şube Kodu: KDK-001</Text>
+            </View>
+          </View>
+
+          {/* Profil Menüsü */}
+          <View style={styles.profileMenu}>
+            {/* Hesap Ayarları */}
+            <Pressable style={styles.menuItem}>
+              <View style={styles.menuItemLeft}>
+                <View style={[styles.menuIconBg, { backgroundColor: '#e3f2fd' }]}>
+                  <Ionicons name="settings-outline" size={24} color="#1565c0" />
+                </View>
+                <Text style={styles.menuItemText}>Hesap Ayarları</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#666" />
+            </Pressable>
+
+            {/* Bildirim Ayarları */}
+            <Pressable style={styles.menuItem}>
+              <View style={styles.menuItemLeft}>
+                <View style={[styles.menuIconBg, { backgroundColor: '#fff3e0' }]}>
+                  <Ionicons name="notifications-outline" size={24} color="#ef6c00" />
+                </View>
+                <Text style={styles.menuItemText}>Bildirim Ayarları</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#666" />
+            </Pressable>
+
+            {/* Yardım ve Destek */}
+            <Pressable style={styles.menuItem}>
+              <View style={styles.menuItemLeft}>
+                <View style={[styles.menuIconBg, { backgroundColor: '#e8f5e9' }]}>
+                  <Ionicons name="help-buoy-outline" size={24} color="#2e7d32" />
+                </View>
+                <Text style={styles.menuItemText}>Yardım ve Destek</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#666" />
+            </Pressable>
+
+            {/* Hakkında */}
+            <Pressable style={styles.menuItem}>
+              <View style={styles.menuItemLeft}>
+                <View style={[styles.menuIconBg, { backgroundColor: '#f3e5f5' }]}>
+                  <Ionicons name="information-circle-outline" size={24} color="#7b1fa2" />
+                </View>
+                <Text style={styles.menuItemText}>Hakkında</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#666" />
+            </Pressable>
+          </View>
+
+          {/* Çıkış Yap Butonu */}
+          <Pressable style={styles.logoutButton}>
+            <Ionicons name="log-out-outline" size={24} color="#dc3545" />
+            <Text style={styles.logoutText}>Çıkış Yap</Text>
+          </Pressable>
         </View>
       </ScrollView>
     </LinearGradient>
@@ -473,7 +551,143 @@ const SearchScreen = () => {
   );
 };
 
-const AddScreen = () => {
+// ScanScreen oluşturalım
+const ScanScreen = () => {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scannedBarcode, setScannedBarcode] = useState('');
+  const [productName, setProductName] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+  const handleBarCodeScanned = ({ type, data }) => {
+    setScannedBarcode(data);
+    setIsScanning(false);
+    // Burada barkod numarasına göre ürün adını getirebilirsiniz
+    setProductName('Örnek Ürün'); // Bu kısmı gerçek ürün verileriyle değiştirin
+  };
+
+  const renderScanner = () => {
+    if (!hasPermission) {
+      return (
+        <View style={styles.scannerContainer}>
+          <Ionicons name="barcode-outline" size={40} color="#666" />
+          <Text style={styles.scannerText}>Kamera izni gerekiyor</Text>
+        </View>
+      );
+    }
+
+    if (isScanning) {
+      return (
+        <View style={styles.scannerContainer}>
+          <Camera
+            onBarCodeScanned={handleBarCodeScanned}
+            style={StyleSheet.absoluteFillObject}
+            barCodeScannerSettings={{
+              barCodeTypes: [Camera.Constants.BarCodeType.qr, Camera.Constants.BarCodeType.ean13],
+            }}
+          />
+          <View style={styles.overlay}>
+            <View style={styles.scanArea} />
+          </View>
+          <Pressable 
+            style={styles.closeButton}
+            onPress={() => setIsScanning(false)}
+          >
+            <Ionicons name="close-circle" size={50} color="white" />
+          </Pressable>
+        </View>
+      );
+    }
+
+    return (
+      <Pressable 
+        onPress={() => setIsScanning(true)}
+        style={styles.scannerContainer}
+      >
+        <Ionicons name="barcode-outline" size={40} color="#666" />
+        <Text style={styles.scannerText}>Barkod Okutmak İçin Dokun</Text>
+      </Pressable>
+    );
+  };
+
+  return (
+    <LinearGradient
+      colors={['#fff5f2', '#fff', '#ffe8e0']}
+      style={styles.container}
+    >
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoidView}
+      >
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          <View style={styles.scanContainer}>
+            <View style={styles.selectedListBanner}>
+              <Ionicons name="document-text-outline" size={20} color="#ff5722" />
+              <Text style={styles.selectedListBannerText}>Mart_2024_Sayım.xlsx</Text>
+            </View>
+
+            {renderScanner()}
+
+            <View style={styles.productInfoContainer}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Barkod</Text>
+                <View style={styles.inputWithIcon}>
+                  <TextInput
+                    style={styles.input}
+                    value={scannedBarcode}
+                    editable={false}
+                    placeholder="Barkod"
+                    placeholderTextColor="#666"
+                  />
+                  <Ionicons name="barcode-outline" size={24} color="#ff5722" />
+                </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Ürün Adı</Text>
+                <View style={styles.inputWithIcon}>
+                  <TextInput
+                    style={styles.input}
+                    value={productName}
+                    editable={false}
+                    placeholder="Ürün adı"
+                    placeholderTextColor="#666"
+                  />
+                  <Ionicons name="cube-outline" size={24} color="#ff5722" />
+                </View>
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Sayılan Miktar</Text>
+                <View style={styles.inputWithIcon}>
+                  <TextInput
+                    style={[styles.input, { backgroundColor: '#fff' }]}
+                    placeholder="Miktar girin"
+                    keyboardType="numeric"
+                    placeholderTextColor="#666"
+                  />
+                  <Ionicons name="calculator-outline" size={24} color="#ff5722" />
+                </View>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
+  );
+};
+
+// AddScreen'deki scanButton'a navigation ekleyelim
+const AddScreen = ({ navigation }) => {
   return (
     <LinearGradient
       colors={['#fff5f2', '#fff', '#ffe8e0']}
@@ -484,12 +698,11 @@ const AddScreen = () => {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.addContainer}>
-          {/* Üst Başlık */}
           <Text style={styles.addTitle}>Yeni Sayım</Text>
           <Text style={styles.addSubtitle}>Sayıma başlamak için hazır mısınız?</Text>
 
-          {/* Ana Buton */}
           <Pressable
+            onPress={() => navigation.navigate('Scan')}
             style={({ pressed }) => [
               styles.scanButton,
               { transform: [{ scale: pressed ? 0.98 : 1 }] }
@@ -504,7 +717,6 @@ const AddScreen = () => {
             </View>
           </Pressable>
 
-          {/* Alt Bilgi Kartları */}
           <View style={styles.infoCardsContainer}>
             <View style={styles.infoCard}>
               <View style={styles.infoIconContainer}>
@@ -523,15 +735,7 @@ const AddScreen = () => {
             </Pressable>
           </View>
 
-          {/* İpucu */}
-          <View style={styles.tipContainer}>
-            <Ionicons name="bulb-outline" size={20} color="#666" />
-            <Text style={styles.tipText}>
-              İpucu: Sayıma başlamadan önce sayım listesi seçtiğinizden emin olun
-            </Text>
-          </View>
-
-          {/* Seçili Liste - En Alta Taşındı */}
+          {/* Seçili Liste */}
           <View style={styles.selectedListContainer}>
             <Text style={styles.selectedListLabel}>Seçili Liste:</Text>
             <View style={styles.selectedListContent}>
@@ -541,6 +745,14 @@ const AddScreen = () => {
                 <Text style={styles.changeListText}>Değiştir</Text>
               </Pressable>
             </View>
+          </View>
+
+          {/* İpucu - Seçili listenin altına taşındı */}
+          <View style={styles.tipContainer}>
+            <Ionicons name="bulb-outline" size={20} color="#666" />
+            <Text style={styles.tipText}>
+              İpucu: Barkodu okutmak için kamerayı ürün etiketine yakın tutun
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -558,8 +770,84 @@ const NotificationsScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.homeContainer}>
-          <Text style={styles.welcomeTitle}>Bildirimler</Text>
+        <View style={styles.notificationContainer}>
+          <Text style={styles.notificationTitle}>Bildirimler</Text>
+
+          {/* Acil/Önemli Bildirim */}
+          <View style={[styles.notificationCard, styles.urgentNotification]}>
+            <View style={styles.notificationHeader}>
+              <View style={[styles.notificationDot, { backgroundColor: '#dc3545' }]} />
+              <Text style={styles.notificationTime}>10 dk önce</Text>
+            </View>
+            <View style={styles.notificationContent}>
+              <Ionicons name="alert-circle" size={24} color="#dc3545" />
+              <View style={styles.notificationText}>
+                <Text style={styles.notificationMessage}>
+                  Mart ayı sayımı için son gün bugün!
+                </Text>
+                <Text style={styles.notificationDetail}>
+                  Sayımınızı tamamlamak için 4 saat kaldı.
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Onay Bildirimi */}
+          <View style={styles.notificationCard}>
+            <View style={styles.notificationHeader}>
+              <View style={[styles.notificationDot, { backgroundColor: '#28a745' }]} />
+              <Text style={styles.notificationTime}>2 saat önce</Text>
+            </View>
+            <View style={styles.notificationContent}>
+              <Ionicons name="checkmark-circle" size={24} color="#28a745" />
+              <View style={styles.notificationText}>
+                <Text style={styles.notificationMessage}>
+                  Şubat sayımı onaylandı
+                </Text>
+                <Text style={styles.notificationDetail}>
+                  Yönetici tarafından sayım raporu onaylandı.
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Sistem Bildirimi */}
+          <View style={styles.notificationCard}>
+            <View style={styles.notificationHeader}>
+              <View style={[styles.notificationDot, { backgroundColor: '#0d6efd' }]} />
+              <Text style={styles.notificationTime}>1 gün önce</Text>
+            </View>
+            <View style={styles.notificationContent}>
+              <Ionicons name="sync" size={24} color="#0d6efd" />
+              <View style={styles.notificationText}>
+                <Text style={styles.notificationMessage}>
+                  Sistem güncellemesi
+                </Text>
+                <Text style={styles.notificationDetail}>
+                  Yeni özellikler eklendi. Değişiklikleri görmek için tıklayın.
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Görev Bildirimi */}
+          <View style={styles.notificationCard}>
+            <View style={styles.notificationHeader}>
+              <View style={[styles.notificationDot, { backgroundColor: '#ff5722' }]} />
+              <Text style={styles.notificationTime}>2 gün önce</Text>
+            </View>
+            <View style={styles.notificationContent}>
+              <Ionicons name="list" size={24} color="#ff5722" />
+              <View style={styles.notificationText}>
+                <Text style={styles.notificationMessage}>
+                  Yeni sayım görevi atandı
+                </Text>
+                <Text style={styles.notificationDetail}>
+                  Elektronik departmanı için yeni sayım görevi oluşturuldu.
+                </Text>
+              </View>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </LinearGradient>
@@ -577,6 +865,7 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={TabNavigator} />
+        <Stack.Screen name="Scan" component={ScanScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -588,11 +877,27 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 30, // Alt kısımda extra padding
+    paddingBottom: 30,
+  },
+  centerContent: {
+    justifyContent: 'center',
   },
   formContainer: {
     paddingHorizontal: 20,
-    paddingTop: 60,
+    marginHorizontal: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    paddingVertical: 30,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+    alignSelf: 'center',
+    width: '90%',
   },
   homeContainer: {
     paddingHorizontal: 20,
@@ -603,6 +908,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   addContainer: {
+    flex: 1,
     paddingHorizontal: 20,
     paddingTop: 60,
   },
@@ -978,7 +1284,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     borderRadius: 15,
     padding: 15,
-    marginTop: 30,
+    marginTop: 15,
   },
   tipText: {
     fontSize: 13,
@@ -1026,5 +1332,326 @@ const styles = StyleSheet.create({
     color: '#ff5722',
     fontSize: 14,
     fontWeight: '600',
+  },
+  notificationContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  notificationTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
+  },
+  notificationCard: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  urgentNotification: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#dc3545',
+  },
+  notificationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  notificationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  notificationTime: {
+    fontSize: 12,
+    color: '#666',
+  },
+  notificationContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  notificationText: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  notificationMessage: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  notificationDetail: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  profileContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  profileHeader: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  profileImageContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  editImageButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#ff5722',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: 'white',
+  },
+  profileName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  profileRole: {
+    fontSize: 16,
+    color: '#666',
+  },
+  storeInfoCard: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  storeInfoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  storeInfoTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 10,
+  },
+  storeInfoContent: {
+    marginLeft: 34,
+  },
+  storeInfoText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 5,
+  },
+  storeInfoSubtext: {
+    fontSize: 14,
+    color: '#666',
+  },
+  profileMenu: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 10,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 15,
+  },
+  menuItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  menuIconBg: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  menuItemText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffebee',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 30,
+  },
+  logoutText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#dc3545',
+    marginLeft: 10,
+  },
+  scanContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  scannerContainer: {
+    height: 300,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 30,
+    borderWidth: 2,
+    borderColor: '#e0e0e0',
+    borderStyle: 'dashed',
+    overflow: 'hidden',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scanArea: {
+    width: 250,
+    height: 250,
+    borderWidth: 2,
+    borderColor: '#fff',
+    backgroundColor: 'transparent',
+  },
+  closeButton: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    padding: 10,
+  },
+  scannerText: {
+    marginTop: 10,
+    color: '#666',
+    fontSize: 16,
+  },
+  productInfoContainer: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 8,
+  },
+  inputWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8f8f8',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+    color: '#333',
+  },
+  saveButton: {
+    height: 50,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    shadowColor: "#ff5722",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  keyboardAvoidView: {
+    flex: 1,
+  },
+  selectedListBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  selectedListBannerText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+    marginLeft: 10,
   },
 });
